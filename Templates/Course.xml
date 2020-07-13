@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<slide:course 
+  xmlns:slide="https://schema.expertml.com/training-slides" 
+  xmlns:p="toReplace"
+  xmlns="http://www.w3.org/1999/xhtml">
+  
+  <slide:courseIntro>
+    <slide:courseName>Course Title</slide:courseName>
+    <slide:audience>Client</slide:audience>
+    <slide:date start="2020-07-15"/>
+    <slide:trainerInfo>
+      <!-- Slides about the trainer(s) -->
+      <slide:ref href="../../Content/General/trainerIntro-Tom.xml"/>
+    </slide:trainerInfo>
+    <!-- Any general slides -->
+    <slide:ref href="../../Content/General/questions.xml"/>
+    <slide:courseOverview/>
+  </slide:courseIntro>
+
+  <!-- Include (or write!) slides, exercises and slide sets here -->
+
+</slide:course>

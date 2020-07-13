@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<slide:set 
+  xmlns:slide="https://schema.expertml.com/training-slides"
+  xmlns:p="toReplace"
+  xmlns="http://www.w3.org/1999/xhtml"
+  topic=""
+  >
+
+  <slide:slide>
+    <h2>Slide Title</h2>
+  </slide:slide>
+
+</slide:set>

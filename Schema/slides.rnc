@@ -1,0 +1,147 @@
+# © eXpertML Ltd, 2020
+
+# Portions of the schema (the xhtml5 directory and it's contents) are
+# Copyright (c) 2010-2011 International Digital Publishing Forum  and issued under the license
+# contained in the xhtml5 directory.
+
+# The rest of this code is published under the GNU General Public license; please see the LICENSE and README.md files in the parent directory.
+
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+namespace slide = "https://schema.expertml.com/training-slides"
+default namespace html = "http://www.w3.org/1999/xhtml"
+namespace xml = "http://www.w3.org/XML/1998/namespace"
+namespace local = ""
+
+start = slide.set | slide.course | slide.exercise
+
+include "xhtml5/slides-xhtml.rnc"
+
+## Courses are made up of references to slide sets, plus any one-off slides:
+slide.course = element slide:course {
+      slide.course.metadata 
+    & slide.targetAttlist
+    & slide.set.content
+  }
+slide.course.intro = element slide:courseIntro {
+    slide.course.name,
+    slide.course.audience?,
+    slide.course.date,
+    slide.trainer.info?,
+    slide.set.content?,
+    slide.course.overview
+  }
+slide.course.name = element slide:courseName {text}
+slide.course.audience = element slide:audience {text}
+slide.course.date = element slide:date {
+    attribute start {xsd:date},
+    attribute end {xsd:date}?
+  }
+slide.trainer.info = element slide:trainerInfo {
+    slide.set.ref+
+  }
+slide.course.overview = element slide:courseOverview {empty}
+
+## Slide sets are made up of metadata and slides
+slide.set = element slide:set {
+      slide.targetAttlist 
+    & slide.set.metadata 
+    & slide.set.content
+  }
+slide.set.content = (slide.title | slide.set | slide.slide | slide.set.ref)+
+slide.set.ref = element slide:ref {slides.href, empty}
+
+## Slide titles are slides with no content other than a title (with optional subtitle)
+slide.title = element slide:title {
+  (
+    html5.h.attlist,
+    html5.h.content
+  )
+  | (
+    html5.h1,
+    html5.p
+  )
+}
+
+## Metadata
+slide.course.metadata = (slide.course.intro)
+slide.set.metadata = (slide.topic.covered & slide.topic.prerequisites?)
+slide.slide.metadata = attribute cont {'true'}?
+
+## Topic keys
+slide.topic.covered = attribute topic {xsd:NMTOKENS}
+slide.topic.prerequisites = attribute prerequisites {xsd:NMTOKENS}
+
+## Slides are the smallest reusable unit, modeled on html article.
+slide.slide = element slide:slide {
+      slide.slide.attlist
+    & slide.slide.metadata
+    & slide.slide.content
+  }
+slide.slide.attlist &= html5.article.attlist & xml.id?
+slide.slide.content = html5.article.content
+
+## Exercises 
+
+slide.exercise = element slide:exercise {
+  slide.targetAttlist
+  & slide.set.content
+}
+
+## extend block and inline level html5 models
+html5.grouping.class |= slide.code*
+html5.phrasing.model &= slide.emphChar*
+
+## href attribute for all inclusion based elements
+slides.href = attribute href {xsd:anyURI {minLength = "1"}}
+
+## xml id can be used on any element.
+xml.id = attribute xml:id {datatype.ID}
+
+## xml base can also be used 
+xml.base = attribute xml:base {xsd:anyURI}?
+
+## targets should be allowed xml:id and xml:base
+slide.targetAttlist = xml.id? & xml.base
+
+## Presentational markup; emphChar emphasises a character/range (by default the first character) with a style class (default strong/bold).
+slide.emphChar = element slide:emphChar {
+  slide.emphChar.charAtts?,
+  attribute class {xsd:NMTOKENS}?,
+  html5.phrasing.model
+}
+slide.emphChar.charAtts = (
+  attribute char {xsd:integer},
+  attribute charEnd {xsd:integer}?
+)
+
+## Foreign content:
+anything = ( element * { anything } | attribute * { text } | text )*
+foreign-elements = element * - (local:* | slide:*) {anything}*
+
+## xml space can be specified on code samples (bcause it stops oxygen pretty printing them)
+xml.space = attribute xml:space {'default' | 'preserve'}
+
+## code 
+slide.code = (
+    slide.code.general
+  | slide.code.xml
+  | slide.code.text
+)
+
+slide.code.content = (slide.title?, (text|foreign-elements)*)
+slide.code.xml = element slide:code {
+  attribute type {'xml'|'xhtml'},
+  attribute xml:space {'preserve'}?,
+  slide.code.content
+}
+slide.code.text = element slide:code {
+  attribute type {'text'},
+  attribute xml:space {'preserve'},
+  slide.title?,
+  text
+}
+slide.code.general = element slide:code {
+  attribute type {text},
+  attribute xml:space {'preserve'}?,
+  slide.code.content
+}

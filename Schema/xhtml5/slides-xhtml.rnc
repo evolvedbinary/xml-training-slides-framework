@@ -1,0 +1,26 @@
+   default namespace = "http://www.w3.org/1999/xhtml"
+   
+   epub.ssml.ph.attr = notAllowed
+   html5.forms.form.attr = notAllowed
+   
+   include "./mod/html5/html5-document-30.rnc"
+      
+   include "./mod/html5/html5-sections-30.rnc"
+   include "./mod/html5/html5-grouping-30.rnc"
+   include "./mod/html5/html5-phrasing-30.rnc"
+   include "./mod/html5/html5-embed-30.rnc"   
+      
+   include "./mod/html5/html5-edit-30.rnc"
+   include "./mod/html5/html5-style-30.rnc"
+      
+   include "./mod/html5/html5-attrib-30.rnc"
+           
+   include "./mod/datatypes.rnc"
+   include "./mod/html5/html5-models-30.rnc"
+   
+   include "./mod/epub-xhtml-mathml3-30.rnc"
+   include "./mod/epub-xhtml-svg11-30.rnc"
+   
+   include "./mod/rdfa.rnc"
+      
+   
