@@ -12,15 +12,24 @@ default namespace html = "http://www.w3.org/1999/xhtml"
 namespace xml = "http://www.w3.org/XML/1998/namespace"
 namespace local = ""
 
-start = slide.set | slide.course | slide.exercise
+start = slide.set | slide.course | slide.exercise | slide.course-overview
 
 include "xhtml5/slides-xhtml.rnc"
 
+## Course overviews are for multi-sessioned courses
+slide.course-overview = element slide:course-overview {
+			slide.course.metadata
+		& slide.targetAttlist
+		& slide.course.settings?
+		& slide.set.content
+	}
+
 ## Courses are made up of references to slide sets, plus any one-off slides:
 slide.course = element slide:course {
-      slide.course.metadata 
+      slide.course.metadata? 
     & slide.targetAttlist
-    & slide.set.content
+    & slide.course.settings?
+    & slide.set.content?
   }
 slide.course.intro = element slide:courseIntro {
     slide.course.name,
@@ -30,6 +39,20 @@ slide.course.intro = element slide:courseIntro {
     slide.set.content?,
     slide.course.overview
   }
+slide.course.settings = element slide:settings {
+		slide.course.logo? &
+		slide.course.css? &
+		slide.course.webpage?
+  }
+slide.course.logo = element slide:logo {
+		attribute href {text}
+	}
+slide.course.css = element slide:css {
+		attribute filename {text}
+	}
+slide.course.webpage = element slide:webpage {
+		attribute filename {text}
+	}
 slide.course.name = element slide:courseName {text}
 slide.course.audience = element slide:audience {text}
 slide.course.date = element slide:date {
@@ -124,24 +147,23 @@ xml.space = attribute xml:space {'default' | 'preserve'}
 ## code 
 slide.code = (
     slide.code.general
-  | slide.code.xml
   | slide.code.text
 )
 
 slide.code.content = (slide.title?, (text|foreign-elements)*)
-slide.code.xml = element slide:code {
-  attribute type {'xml'|'xhtml'},
+slide.code.attributes = (
   attribute xml:space {'preserve'}?,
-  slide.code.content
-}
+  attribute class {xsd:NMTOKENS}?
+  )
+
 slide.code.text = element slide:code {
   attribute type {'text'},
-  attribute xml:space {'preserve'},
+  slide.code.attributes,
   slide.title?,
   text
 }
 slide.code.general = element slide:code {
   attribute type {text},
-  attribute xml:space {'preserve'}?,
+  slide.code.attributes,
   slide.code.content
 }

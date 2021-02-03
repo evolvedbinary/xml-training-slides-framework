@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<slide:course 
+<slide:course-overview 
   xmlns:slide="https://schema.expertml.com/training-slides" 
   xmlns:p="toReplace"
   xmlns="http://www.w3.org/1999/xhtml">
@@ -19,4 +19,4 @@
 
   <!-- Include (or write!) slides, exercises and slide sets here -->
 
-</slide:course>
+</slide:course-overview>
