@@ -42,6 +42,7 @@
   </xd:doc>
 	
   <!-- title mode -->
+  <xsl:mode name="title" on-no-match="shallow-skip"/>
   
   <xd:doc>
     <xd:desc>Find candidates to be the page title</xd:desc>
@@ -240,100 +241,107 @@
     <xd:desc>Root elements need to create HTML outer elements; actual processing is done in the html mode.</xd:desc>
   </xd:doc>
   <xsl:template match="slide:course|slide:set" mode="#default html">
-		<xsl:result-document href="{$html-file-name}" format="html">
-			<html xmlns="http://www.w3.org/1999/xhtml">
-				<head>
-					<meta name="viewport" content="width=1024, user-scalable=no"/>
+		<html xmlns="http://www.w3.org/1999/xhtml">
+			<head>
+				<meta name="viewport" content="width=1024, user-scalable=no"/>
 
-					<title>
-						<!-- Find title from first available title: should either be the course title, or a title page on the slide.-->
-						<xsl:variable name="titles" as="xs:string*">
-							<xsl:apply-templates mode="title"/>
-						</xsl:variable>
-						<xsl:sequence select="($titles, 'eXpertML Training (c) ' || year-from-date(current-date()))[1]"/>
-					</title>
+				<title>
+					<!-- Find title from first available title: should either be the course title, or a title page on the slide.-->
+					<xsl:variable name="titles" as="xs:string*">
+						<xsl:apply-templates mode="title"/>
+					</xsl:variable>
+					<xsl:sequence select="($titles[1], 'eXpertML Training (c) ' || year-from-date(current-date()))[1]"/>
+				</title>
 
-					<link href="http://fonts.googleapis.com/css?family=Inconsolata|Open+Sans:400italic,600italic,700italic,700,400;subset=latin,latin-ext" rel="stylesheet" type="text/css"/>
+				<link href="http://fonts.googleapis.com/css?family=Inconsolata|Open+Sans:400italic,600italic,700italic,700,400;subset=latin,latin-ext" rel="stylesheet" type="text/css"/>
 
-					<!-- Required stylesheet -->
-					<link rel="stylesheet" href="core/deck.core.css"/>
+				<!-- Required stylesheet -->
+				<link rel="stylesheet" href="core/deck.core.css"/>
 
-					<!-- Extension CSS files go here. Remove or add as needed. -->
-					<link rel="stylesheet" href="extensions/menu/deck.menu.css"/>
-					<link rel="stylesheet" href="extensions/scale/deck.scale.css"/>
+				<!-- Extension CSS files go here. Remove or add as needed. -->
+				<link rel="stylesheet" href="extensions/menu/deck.menu.css"/>
+				<link rel="stylesheet" href="extensions/scale/deck.scale.css"/>
 
-					<!-- Style theme. More available in /themes/style/ or create your own. -->
-					<link rel="stylesheet" href="themes/style/{$css-file-name}"/>
+				<!-- Style theme. More available in /themes/style/ or create your own. -->
+				<link rel="stylesheet" href="themes/style/{$css-file-name}"/>
 
-					<!-- Transition theme. More available in /themes/transition/ or create your own. -->
-					<link rel="stylesheet" href="themes/transition/horizontal-slide.css"/>
-
-
-
-					<!-- Required Modernizr file -->
-					<script src="modernizr.custom.js">&#160;</script>
-				</head>
-				<body>
-					<div class="deck-container">
-						<xsl:apply-templates select="." mode="html"/>
-					</div>
-
-					<footer>
-						<img src="{$logo}"/>
-
-						<!-- Begin extension snippets. Add or remove as needed. -->
-
-
-						<!-- deck.status snippet -->
-						<p class="deck-status">
-							<span class="deck-status-current"/> / <span class="deck-status-total"/>
-						</p>
+				<!-- Transition theme. More available in /themes/transition/ or create your own. -->
+				<link rel="stylesheet" href="themes/transition/horizontal-slide.css"/>
 
 
 
-					</footer>
-					<!-- End slides. -->
+				<!-- Required Modernizr file -->
+				<script src="modernizr.custom.js">&#160;</script>
+			</head>
+			<body>
+				<div class="deck-container">
+					<xsl:apply-templates mode="html"/>
+				</div>
+
+				<footer>
+					<img src="{$logo}"/>
+
+					<!-- Begin extension snippets. Add or remove as needed. -->
+
+
+					<!-- deck.status snippet -->
+					<p class="deck-status">
+						<span class="deck-status-current"/> / <span class="deck-status-total"/>
+					</p>
 
 
 
-					<!-- End extension snippets. -->
+				</footer>
+				<!-- End slides. -->
 
-					<!-- Required JS files. -->
-					<script src="jquery.min.js"/>
-					<script src="core/deck.core.js"/>
 
-					<!-- Prism code highlighting -->
-					<script>
-          Prism.plugins.NormalizeWhitespace.setDefaults({
-          	'remove-trailing': true,
-          	'remove-indent': true,
-          	'left-trim': true,
-          	'right-trim': true,
-          	'remove-initial-line-feed': true,
-          	/*'break-lines': 80,
-          	'indent': 2,
-          	'tabs-to-spaces': 4,
-          	'spaces-to-tabs': 4*/
-          });  
-			  </script>
-					<script src="prism.js"/>
 
-					<!-- Extension JS files. Add or remove as needed. -->
-					<script src="extensions/menu/deck.menu.js"/>
-					<script src="extensions/goto/deck.goto.js"/>
-					<script src="extensions/status/deck.status.js"/>
-					<script src="extensions/navigation/deck.navigation.js"/>
-					<script src="extensions/scale/deck.scale.js"/>
+				<!-- End extension snippets. -->
 
-					<!-- Initialize the deck. You can put this in an external file if desired. -->
-					<script>
-					$(function() {
-					$.deck('.slide');
-					});
-				</script>
-				</body>
-			</html>
-		</xsl:result-document>
+				<!-- Required JS files. -->
+				<script src="jquery.min.js"/>
+				<script src="core/deck.core.js"/>
+
+				<!-- Prism code highlighting -->
+				<script>
+        Prism.plugins.NormalizeWhitespace.setDefaults({
+          'remove-trailing': true,
+          'remove-indent': true,
+          'left-trim': true,
+          'right-trim': true,
+          'remove-initial-line-feed': true,
+          /*'break-lines': 80,
+          'indent': 2,
+          'tabs-to-spaces': 4,
+          'spaces-to-tabs': 4*/
+        });  
+		  </script>
+				<script src="prism.js"/>
+
+				<!-- Extension JS files. Add or remove as needed. -->
+				<script src="extensions/menu/deck.menu.js"/>
+				<script src="extensions/goto/deck.goto.js"/>
+				<script src="extensions/status/deck.status.js"/>
+				<script src="extensions/navigation/deck.navigation.js"/>
+				<script src="extensions/scale/deck.scale.js"/>
+
+				<!-- Initialize the deck. You can put this in an external file if desired. -->
+				<script>
+				$(function() {
+				$.deck('.slide');
+				});
+			</script>
+			</body>
+		</html>		
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>If the filename isn't index.html, we need to create one!</xd:desc>
+  </xd:doc>
+  <xsl:template match="(slide:course|slide:set)[$html-file-name ne 'index.html']" mode="#default html">
+    <xsl:result-document href="{$html-file-name}" format="html">
+      <xsl:next-match/>
+    </xsl:result-document>
   </xsl:template>
   
   <xd:doc>
