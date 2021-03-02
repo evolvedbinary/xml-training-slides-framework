@@ -240,7 +240,7 @@
   <xd:doc>
     <xd:desc>Root elements need to create HTML outer elements; actual processing is done in the html mode.</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:course|slide:set" mode="#default html">
+  <xsl:template match="slide:course|slide:set" mode="#default">
 		<html xmlns="http://www.w3.org/1999/xhtml">
 			<head>
 				<meta name="viewport" content="width=1024, user-scalable=no"/>
@@ -333,6 +333,13 @@
 			</script>
 			</body>
 		</html>		
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Create html structures for sub-pages</xd:desc>
+  </xd:doc>
+  <xsl:template match="(slide:course|slide:set)[$html-file-name ne 'index.html']" mode="html">
+    <xsl:apply-templates select="." mode="#default"/>
   </xsl:template>
   
   <xd:doc>
