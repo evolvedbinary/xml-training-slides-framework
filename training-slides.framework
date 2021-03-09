@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<serialized version="21.1" xml:space="preserve">
+<serialized xml:space="preserve">
 	<serializableOrderedMap>
 		<entry>
 			<String>document.types</String>
 			<documentTypeDescriptor-array>
 				<documentTypeDescriptor>
+					<field name="webResources">
+						<null/>
+					</field>
 					<field name="extensionPatch">
 						<null/>
 					</field>
@@ -312,7 +315,7 @@
 														<Integer>3</Integer>
 													</field>
 													<field name="uri">
-														<String>file:/Users/yamahito/Documents/frameworks/training-slides/Schema/slides.rnc</String>
+														<String>${framework}/Schema/slides.rnc</String>
 													</field>
 												</validationUnitSchema>
 											</field>
