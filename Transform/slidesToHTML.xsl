@@ -38,13 +38,6 @@
   <xsl:mode on-no-match="shallow-skip"/>
   
   <xd:doc>
-  	<xd:desc></xd:desc>
-  </xd:doc>
-	
-  <!-- title mode -->
-  <xsl:mode name="title" on-no-match="shallow-skip"/>
-  
-  <xd:doc>
     <xd:desc>Find candidates to be the page title</xd:desc>
   </xd:doc>
   <xsl:template match="slide:courseName|slide:title[not(h1)]|slide:title/h1" mode="title">
