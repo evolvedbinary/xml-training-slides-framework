@@ -24,7 +24,6 @@
   
   <xsl:param name="css-file-name" select="(/slide:course/slide:settings/slide:css/@filename, 'expertml.css')[1]"/>
 	<xsl:param name="logo" select="(/slide:course/slide:settings/slide:logo/@href, 'images/logo.png')[1]"/>
-	<xsl:param name="html-file-name" select="(/slide:course/slide:settings/slide:webpage/@filename, 'index.html')[1]"></xsl:param>
   <xsl:param name="code-line-numbers" select="false()" as="xs:boolean"/>
   
   <xsl:variable name="quot"><![CDATA["]]></xsl:variable>
@@ -32,22 +31,56 @@
   
   <xsl:output method="xhtml" html-version="5" indent="true" name="html"/>
   
-  <xsl:mode name="html" on-no-match="shallow-copy"/>
-  <xsl:mode name="title" on-no-match="shallow-skip" warning-on-no-match="false"/>
-  <xsl:mode name="code" on-no-match="text-only-copy" on-multiple-match="use-last" warning-on-multiple-match="false" warning-on-no-match="false"/>
-  <xsl:mode on-no-match="shallow-skip"/>
+  <xsl:mode name="slide:html" on-no-match="shallow-copy"/>
+  <xsl:mode name="slide:flatten" on-no-match="shallow-copy" warning-on-no-match="false"/>
+  <xsl:mode name="slide:title" on-no-match="shallow-skip" warning-on-no-match="false"/>
+  <xsl:mode name="slide:code" on-no-match="text-only-copy" on-multiple-match="use-last" warning-on-multiple-match="false" warning-on-no-match="false"/>
+  <xsl:mode on-no-match="shallow-skip" on-multiple-match="fail"/>
+  
+  <!-- Accumulators -->
   
   <xd:doc>
-  	<xd:desc></xd:desc>
+    <xd:desc>Topic accumulators collects topic slugs for prequisite checks</xd:desc>
   </xd:doc>
-	
-  <!-- title mode -->
-  <xsl:mode name="title" on-no-match="shallow-skip"/>
+  <xsl:accumulator name="topics" as="xs:string*" initial-value="()">
+    <xsl:accumulator-rule match="slide:set|slide:course" select="($value, tokenize(@topic)) => distinct-values()"/>
+  </xsl:accumulator>
+  
+  <!-- Default Mode -->
+  
+  <xd:doc>
+    <xd:desc>Default mode is only used to flatten then split the course</xd:desc>
+  </xd:doc>
+  <xsl:template match="/slide:*">
+    <xsl:variable name="flattened">
+      <xsl:apply-templates select="." mode="slide:flatten"/>
+    </xsl:variable>
+    <xsl:apply-templates select="$flattened" mode="slide:html"/>
+  </xsl:template>
+  
+  <!-- Flatten Mode: produces flattened course XML; necessary for prerequisite processing -->
+  
+  <xd:doc>
+    <xd:desc>include slide:ref references</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:ref" mode="slide:flatten">
+    <xsl:variable name="href" select="resolve-uri(@href, base-uri(.))"/>
+    <xsl:try>
+      <xsl:apply-templates select="doc($href)" mode="#current"/>
+      <xsl:catch>
+        <xsl:comment expand-text="true">Missing slides: {$href}</xsl:comment>
+        <xsl:message expand-text="true">ERROR: processing {$href}.</xsl:message>
+        <xsl:message expand-text="true">{$err:code}: {$err:description}</xsl:message>
+      </xsl:catch>
+    </xsl:try>
+  </xsl:template>
+  
+  <!-- Title mode -->
   
   <xd:doc>
     <xd:desc>Find candidates to be the page title</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:courseName|slide:title[not(h1)]|slide:title/h1" mode="title">
+  <xsl:template match="slide:courseName|slide:title[not(h1)]|slide:title/h1" mode="slide:title">
     <!-- Normally we'd frown on the use of xsl:value-of rather than xsl:sequence, but we specifically want the value as a single xs:string -->
     <xsl:value-of select="."/>
   </xsl:template>
@@ -55,9 +88,33 @@
   <!-- html mode -->
   
   <xd:doc>
+    <xd:desc>Default handling of html elements is to copy without namespaces</xd:desc>
+  </xd:doc>
+  <xsl:template match="html:*" mode="slide:html">
+    <xsl:copy copy-namespaces="false">
+      <xsl:apply-templates select="@*|node()" mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Default slide:* handling is to simply recurse</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:*" mode="slide:html">
+    <xsl:apply-templates mode="slide:html"/>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Add topic check for slide sets</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:set|slide:course" mode="slide:html">
+    <xsl:call-template name="slide:topic-check"/>
+    <xsl:next-match/>
+  </xsl:template>
+  
+  <xd:doc>
     <xd:desc>Creates slides from slide:slide</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:slide" mode="html">
+  <xsl:template match="slide:slide" mode="slide:html">
     <article class="slide" id="{(@xml:id, @id, generate-id())[1]}">
       <xsl:apply-templates mode="#current"/>
     </article>
@@ -66,7 +123,7 @@
   <xd:doc>
     <xd:desc>Create course introduction</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:courseIntro" mode="html">
+  <xsl:template match="slide:courseIntro" mode="slide:html">
     <!-- Cover slide -->
     <article class="slide" id="front_cover">
       <xsl:apply-templates select="slide:courseName, slide:audience, slide:date" mode="#current"/>
@@ -81,28 +138,28 @@
   <xd:doc>
     <xd:desc>Create course title from courseName</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:courseName" mode="html">
+  <xsl:template match="slide:courseName" mode="slide:html">
     <h1><xsl:apply-templates mode="#current"/></h1>
   </xsl:template>
   
   <xd:doc>
     <xd:desc>Create course audience</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:audience" mode="html">
+  <xsl:template match="slide:audience" mode="slide:html">
     <p><xsl:apply-templates mode="#current"/></p>
   </xsl:template>
   
   <xd:doc>
     <xd:desc>Create course date</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:date" mode="html" expand-text="true">
+  <xsl:template match="slide:date" mode="slide:html" expand-text="true">
     <p>{format-date(@start, '[FNn] [D1o] [MNn] [Y0001]')}</p>
   </xsl:template>
   
   <xd:doc>
     <xd:desc>Create title slides</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:title[not(h1)]" mode="html">
+  <xsl:template match="slide:title[not(h1)]" mode="slide:html">
     <article class="slide">
       <h1><xsl:apply-templates mode="#current"/></h1>
     </article>
@@ -111,7 +168,7 @@
   <xd:doc>
     <xd:desc>Standardise all titles on slides as h2; we can keep the heading levels for the ToC</xd:desc>
   </xd:doc>
-  <xsl:template match="(h1|h2|h3|h4|h5|h6)[parent::slide:slide and not(preceding-sibling::*)]" mode="html">
+  <xsl:template match="(h1|h2|h3|h4|h5|h6)[parent::slide:slide and not(preceding-sibling::*)]" mode="slide:html">
     <h2>
       <xsl:apply-templates select="@*|node()" mode="#current"/>
     </h2>
@@ -120,58 +177,61 @@
   <xd:doc>
     <xd:desc>Create code blocks; escape all markup</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:code" mode="html">
+  <xsl:template match="slide:code" mode="slide:html">
     <pre>
       <xsl:if test="matches(@class, '\sdata-start--?\d+')">
         <xsl:attribute name="data-start" select="replace(@class, '.*?\sdata-start-(-?\d+).*', '$1')"/>
       </xsl:if>
       <xsl:call-template name="slide:codeClass"/>
       <code contenteditable="">
-        <xsl:apply-templates select="node()" mode="code"/>
+        <xsl:apply-templates select="node()" mode="slide:code"/>
       </code>
     </pre>
   </xsl:template>
   
   <xd:doc>
-    <xd:desc>Adds various classes to code blocks e.g. for syntax highlighting and code numbering</xd:desc>
+    <xd:desc>Create sub-pages</xd:desc>
   </xd:doc>
-  <xsl:template name="slide:codeClass">
-    <xsl:variable name="lineNumbers" as="xs:string?">
-      <xsl:if test="$code-line-numbers and not(slide:contains(@class, 'no-line-numbers'))">
-        <xsl:text>line-numbers</xsl:text>
-      </xsl:if>
-    </xsl:variable>
-    <xsl:variable name="language" as="xs:string?">
-      <xsl:apply-templates select="@type" mode="code"/>
-    </xsl:variable>
-    <xsl:attribute name="class" select="slide:addToken(($lineNumbers, ($language, 'language-none')[1]), @class)"/>
+  <xsl:template match="slide:course[slide:settings/slide:webpage/@filename ne 'index.html']" mode="slide:html">
+    <xsl:result-document href="{slide:settings/slide:webpage/@filename}" format="html">
+      <xsl:call-template name="slide:makePage"/>
+    </xsl:result-document>
   </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Create main page</xd:desc>
+  </xd:doc>
+  <xsl:template match="/*" mode="slide:html">
+    <xsl:call-template name="slide:makePage"/>
+  </xsl:template>
+  
+  <!-- code mode -->
   
   <xd:doc>
     <xd:desc>Add syntax highlighting for languages: this will only work if there is a prism language definition for "'language-'{@type}"</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:code/@type" mode="code">
+  <xsl:template match="slide:code/@type" mode="slide:code">
     <xsl:text expand-text="true">language-{.}</xsl:text>
   </xsl:template>
   
   <xd:doc>
     <xd:desc>Add syntax highlighting for markup languages in code</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:code/@type[. = ('xml', 'xhtml', 'xslt', 'xsl')]" mode="code">
+  <xsl:template match="slide:code/@type[. = ('xml', 'xhtml', 'xslt', 'xsl')]" mode="slide:code">
     <xsl:text>language-markup</xsl:text>
   </xsl:template>
   
   <xd:doc>
     <xd:desc>No XPath syntax highlighting available, so use xquery instead</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:code/@type[. = ('xpath')]" mode="code">
+  <xsl:template match="slide:code/@type[. = ('xpath')]" mode="slide:code">
     <xsl:text>language-xquery</xsl:text>
   </xsl:template>
   
   <xd:doc>
     <xd:desc>Escape comment characters in code blocks</xd:desc>
   </xd:doc>
-  <xsl:template match="comment()" mode="code">
+  <xsl:template match="comment()" mode="slide:code">
     <xsl:text><![CDATA[<!--]]></xsl:text>
     <xsl:value-of select="."/>
     <xsl:text><![CDATA[-->]]></xsl:text>
@@ -180,7 +240,7 @@
   <xd:doc>
     <xd:desc>Escape attribute values in code blocks</xd:desc>
   </xd:doc>
-  <xsl:template match="@*" mode="code">
+  <xsl:template match="@*" mode="slide:code">
     <xsl:text> </xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:text>=</xsl:text>
@@ -201,7 +261,7 @@
   <xd:doc>
     <xd:desc>Escape element names in code blocks</xd:desc>
   </xd:doc>
-  <xsl:template match="*" mode="code">
+  <xsl:template match="*" mode="slide:code">
     <xsl:text>&lt;</xsl:text>
     <xsl:value-of select="name()"/>
     <xsl:apply-templates select="@*" mode="#current"/>
@@ -218,37 +278,47 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+    
+  <!-- Named Templates -->
   
   <xd:doc>
-    <xd:desc>Default slide:* handling is to simply recurse</xd:desc>
+    <xd:desc>Adds various classes to code blocks e.g. for syntax highlighting and code numbering</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:*" mode="html">
-    <xsl:apply-templates mode="html"/>
+  <xsl:template name="slide:codeClass">
+    <xsl:variable name="lineNumbers" as="xs:string?">
+      <xsl:if test="$code-line-numbers and not(slide:contains(@class, 'no-line-numbers'))">
+        <xsl:text>line-numbers</xsl:text>
+      </xsl:if>
+    </xsl:variable>
+    <xsl:variable name="language" as="xs:string?">
+      <xsl:apply-templates select="@type" mode="slide:code"/>
+    </xsl:variable>
+    <xsl:attribute name="class" select="slide:addToken(($lineNumbers, ($language, 'language-none')[1]), @class)"/>
   </xsl:template>
   
   <xd:doc>
-    <xd:desc>Default handling of html elements is to copy without namespaces</xd:desc>
+    <xd:desc>Checks topic prerequisites and outputs warnings as appropriate</xd:desc>
   </xd:doc>
-  <xsl:template match="html:*" mode="html">
-    <xsl:copy copy-namespaces="false">
-      <xsl:apply-templates select="@*|node()" mode="#current"/>
-    </xsl:copy>
+  <xsl:template name="slide:topic-check">
+    <xsl:variable name="prereqs" select="tokenize(@prerequisites)" as="xs:string*"/>
+    <xsl:variable name="topics" select="accumulator-before('topics')"/>
+    <xsl:if test="not(every $prereq in $prereqs satisfies $prereq = $topics)">
+      <xsl:message expand-text="true">Topic {@topic} has missing prerequisite(s): {$prereqs[not(. = $topics)] => string-join(', ')}</xsl:message>
+    </xsl:if>
   </xsl:template>
-	
-	<!-- Mixed Modes -->
-  
+      
   <xd:doc>
-    <xd:desc>Root elements need to create HTML outer elements; actual processing is done in the html mode.</xd:desc>
+    <xd:desc>Create HTML outer elements structure; actual processing is done in the html mode.</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:course|slide:set" mode="#default">
-		<html xmlns="http://www.w3.org/1999/xhtml">
+  <xsl:template name="slide:makePage">
+    <html xmlns="http://www.w3.org/1999/xhtml">
 			<head>
 				<meta name="viewport" content="width=1024, user-scalable=no"/>
 
 				<title>
 					<!-- Find title from first available title: should either be the course title, or a title page on the slide.-->
 					<xsl:variable name="titles" as="xs:string*">
-						<xsl:apply-templates mode="title"/>
+						<xsl:apply-templates mode="slide:title"/>
 					</xsl:variable>
 					<xsl:sequence select="($titles[1], 'eXpertML Training (c) ' || year-from-date(current-date()))[1]"/>
 				</title>
@@ -275,7 +345,7 @@
 			</head>
 			<body>
 				<div class="deck-container">
-					<xsl:apply-templates mode="html"/>
+				  <xsl:next-match/>
 				</div>
 
 				<footer>
@@ -333,35 +403,6 @@
 			</script>
 			</body>
 		</html>		
-  </xsl:template>
-  
-  <xd:doc>
-    <xd:desc>Create html structures for sub-pages</xd:desc>
-  </xd:doc>
-  <xsl:template match="(slide:course|slide:set)[$html-file-name ne 'index.html']" mode="html">
-    <xsl:apply-templates select="." mode="#default"/>
-  </xsl:template>
-  
-  <xd:doc>
-    <xd:desc>If the filename isn't index.html, we need to create one!</xd:desc>
-  </xd:doc>
-  <xsl:template match="(slide:course|slide:set)[$html-file-name ne 'index.html']" mode="#default html">
-    <xsl:result-document href="{$html-file-name}" format="html">
-      <xsl:next-match/>
-    </xsl:result-document>
-  </xsl:template>
-  
-  <xd:doc>
-    <xd:desc>include slide:ref references</xd:desc>
-  </xd:doc>
-  <xsl:template match="slide:ref" mode="html overview">
-    <xsl:try>
-      <xsl:apply-templates select="doc(resolve-uri(@href, base-uri(.)))" mode="#current"/>
-      <xsl:catch>
-        <xsl:message expand-text="true">ERROR: processing {resolve-uri(@href, base-uri(.))}.</xsl:message>
-        <xsl:message expand-text="true">{$err:code}: {$err:description}</xsl:message>
-      </xsl:catch>
-    </xsl:try>
   </xsl:template>
   
   <!-- Functions -->
