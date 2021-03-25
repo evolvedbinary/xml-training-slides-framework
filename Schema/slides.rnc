@@ -12,7 +12,7 @@ default namespace html = "http://www.w3.org/1999/xhtml"
 namespace xml = "http://www.w3.org/XML/1998/namespace"
 namespace local = ""
 
-start = slide.set | slide.course | slide.exercise | slide.course-overview
+start = slide.set | slide.course | slide.exercise | slide.course-overview | slide.session
 
 include "xhtml5/slides-xhtml.rnc"
 
@@ -21,7 +21,8 @@ slide.course-overview = element slide:course-overview {
 			slide.course.metadata
 		& slide.targetAttlist
 		& slide.course.settings?
-		& slide.set.content
+		& slide.course+
+		
 	}
 
 ## Courses are made up of references to slide sets, plus any one-off slides:
@@ -30,15 +31,39 @@ slide.course = element slide:course {
     & slide.targetAttlist
     & slide.course.settings?
     & slide.set.content?
+    & slide.session*
   }
+
+## Sessions are a(n optional) way of splitting courses and slides into separate sessions.
+slide.session = element slide:session {
+    slide.targetAttlist
+  & attribute filename {text}
+  & slide.course.intro?
+  & slide.set.content
+}
+  
+## Course Introductions
 slide.course.intro = element slide:courseIntro {
     slide.course.name,
     slide.course.audience?,
     slide.course.date,
     slide.trainer.info?,
     slide.set.content?,
-    slide.course.overview
+    slide.course.overview?
   }
+slide.course.name = element slide:courseName {text}
+slide.course.audience = element slide:audience {text}
+slide.course.date = element slide:date {
+    attribute start {xsd:date}?,
+    attribute end {xsd:date}?
+  }
+slide.trainer.info = element slide:trainerInfo {
+      slide.set.ref+
+    & slide.slide*
+  }
+slide.course.overview = element slide:overview {empty}
+  
+## Course settings - web page, css, logo, etc.
 slide.course.settings = element slide:settings {
 		slide.course.logo? &
 		slide.course.css? &
@@ -53,16 +78,6 @@ slide.course.css = element slide:css {
 slide.course.webpage = element slide:webpage {
 		attribute filename {text}
 	}
-slide.course.name = element slide:courseName {text}
-slide.course.audience = element slide:audience {text}
-slide.course.date = element slide:date {
-    attribute start {xsd:date},
-    attribute end {xsd:date}?
-  }
-slide.trainer.info = element slide:trainerInfo {
-    slide.set.ref+
-  }
-slide.course.overview = element slide:courseOverview {empty}
 
 ## Slide sets are made up of metadata and slides
 slide.set = element slide:set {
@@ -86,13 +101,14 @@ slide.title = element slide:title {
 }
 
 ## Metadata
-slide.course.metadata = (slide.course.intro)
-slide.set.metadata = (slide.topic.covered & slide.topic.prerequisites?)
+slide.course.metadata = (slide.course.intro & slide.topic.assumed?)
+slide.set.metadata = (slide.topic.covered? & slide.topic.prerequisites?)
 slide.slide.metadata = attribute cont {'true'}?
 
 ## Topic keys
 slide.topic.covered = attribute topic {xsd:NMTOKENS}
 slide.topic.prerequisites = attribute prerequisites {xsd:NMTOKENS}
+slide.topic.assumed = attribute assumed {xsd:NMTOKENS}
 
 ## Slides are the smallest reusable unit, modeled on html article.
 slide.slide = element slide:slide {

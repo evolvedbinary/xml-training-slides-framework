@@ -14,7 +14,7 @@
     </slide:trainerInfo>
     <!-- Any general slides -->
     <slide:ref href="../../Content/General/questions.xml"/>
-    <slide:courseOverview/>
+    <slide:overview/>
   </slide:courseIntro>
 
   <!-- Include (or write!) slides, exercises and slide sets here -->

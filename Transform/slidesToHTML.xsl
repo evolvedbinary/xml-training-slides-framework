@@ -43,7 +43,8 @@
     <xd:desc>Topic accumulators collects topic slugs for prequisite checks</xd:desc>
   </xd:doc>
   <xsl:accumulator name="topics" as="xs:string*" initial-value="()">
-    <xsl:accumulator-rule match="slide:set|slide:course" select="($value, tokenize(@topic)) => distinct-values()"/>
+    <xsl:accumulator-rule match="*[@topic]" select="($value, tokenize(@topic)) => distinct-values()"/>
+    <xsl:accumulator-rule match="*[@assumed]" select="($value, tokenize(@assumed)) => distinct-values()"/>
   </xsl:accumulator>
   
   <!-- Default Mode -->
@@ -123,16 +124,18 @@
   <xd:doc>
     <xd:desc>Create course introduction</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:courseIntro" mode="slide:html">
+  <xsl:template match="slide:courseIntro" mode="slide:html" expand-text="true">
     <!-- Cover slide -->
     <article class="slide" id="front_cover">
       <xsl:apply-templates select="slide:courseName, slide:audience, slide:date" mode="#current"/>
+      <p class="footnote">Slides copyright © eXpertML Ltd {year-from-date(current-date())}</p>
     </article>
     <!-- Trainer Info -->
     <xsl:apply-templates select="slide:trainerInfo" mode="#current"/>
     <!-- Other slides -->
     <xsl:apply-templates select="slide:ref|slide:slide|slide:set" mode="#current"/>
     <!-- Build course Overview -->
+    <xsl:apply-templates select="slide:overview" mode="#current"/>
   </xsl:template>
   
   <xd:doc>
@@ -152,8 +155,15 @@
   <xd:doc>
     <xd:desc>Create course date</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:date" mode="slide:html" expand-text="true">
+  <xsl:template match="slide:date[@start]" mode="slide:html" expand-text="true">
     <p>{format-date(@start, '[FNn] [D1o] [MNn] [Y0001]')}</p>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Create course date (from current date)</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:date[not(@start)]" mode="slide:html" expand-text="true">
+    <p>{format-date(current-date(), '[FNn] [D1o] [MNn] [Y0001]')}</p>
   </xsl:template>
   
   <xd:doc>
@@ -188,13 +198,30 @@
       </code>
     </pre>
   </xsl:template>
-  
+    
   <xd:doc>
-    <xd:desc>Create sub-pages</xd:desc>
+    <xd:desc>Create Course sub-pages</xd:desc>
   </xd:doc>
   <xsl:template match="slide:course[slide:settings/slide:webpage/@filename ne 'index.html']" mode="slide:html">
-    <xsl:result-document href="{slide:settings/slide:webpage/@filename}" format="html">
+    <xsl:variable name="href" select="slide:settings/slide:webpage/@filename"/>
+    <xsl:call-template name="slide:sub-page">
+      <xsl:with-param name="href" select="$href"/>
+    </xsl:call-template>
+    <xsl:result-document href="{$href}" format="html">
       <xsl:call-template name="slide:makePage"/>
+    </xsl:result-document>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Create Session sub-pages</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:session" mode="slide:html">
+    <xsl:variable name="href" select="@filename"/>
+    <xsl:call-template name="slide:sub-page">
+      <xsl:with-param name="href" select="$href"/>
+    </xsl:call-template>
+    <xsl:result-document href="{$href}" format="html">
+      <xsl:call-template name="slide:makePage"/>      
     </xsl:result-document>
   </xsl:template>
   
@@ -280,6 +307,21 @@
   </xsl:template>
     
   <!-- Named Templates -->
+  
+  <xd:doc>
+    <xd:desc>Adds a slide to link to another slide webpage</xd:desc>
+    <xd:param name="href">The URI of the webpage</xd:param>
+  </xd:doc>
+  <xsl:template name="slide:sub-page" expand-text="true">
+    <xsl:param name="href" as="xs:anyURI"/>
+    <xsl:variable name="titles" as="xs:string*">
+      <xsl:apply-templates mode="slide:title"/>
+    </xsl:variable>
+    <article class="slide">
+      <h2><xsl:sequence select="$titles[1]"/></h2>
+      <p><a href="{$href}">Click here to open {$titles[1]} slides.</a></p>
+    </article>
+  </xsl:template>
   
   <xd:doc>
     <xd:desc>Adds various classes to code blocks e.g. for syntax highlighting and code numbering</xd:desc>

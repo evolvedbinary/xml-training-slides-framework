@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<slide:session 
+  xmlns:slide="https://schema.expertml.com/training-slides"
+  xmlns="http://www.w3.org/1999/xhtml"
+  >
+  <slide:webpage filename="${cfn}.html"/>
+  
+  <slide:courseIntro>
+    <slide:courseName>Course Title</slide:courseName>
+    <slide:audience>Client</slide:audience>
+    <slide:date/>
+  </slide:courseIntro>
+  
+  <slide:title>Replace with Content</slide:title>
+
+</slide:session>

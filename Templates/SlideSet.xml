@@ -6,8 +6,6 @@
   topic=""
   >
 
-  <slide:slide>
-    <h2>Slide Title</h2>
-  </slide:slide>
+  <slide:title>Slide Title</slide:title>
 
 </slide:set>
