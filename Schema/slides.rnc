@@ -102,13 +102,16 @@ slide.title = element slide:title {
 
 ## Metadata
 slide.course.metadata = (slide.course.intro & slide.topic.assumed?)
-slide.set.metadata = (slide.topic.covered? & slide.topic.prerequisites?)
-slide.slide.metadata = attribute cont {'true'}?
+slide.set.metadata = (slide.topic.covered? & slide.topic.prerequisites? & slide.topic.duration?)
+slide.slide.metadata = attribute cont {'true'}? & slide.topic.duration?
 
 ## Topic keys
 slide.topic.covered = attribute topic {xsd:NMTOKENS}
 slide.topic.prerequisites = attribute prerequisites {xsd:NMTOKENS}
 slide.topic.assumed = attribute assumed {xsd:NMTOKENS}
+
+## Topic duration
+slide.topic.duration = attribute duration { token }
 
 ## Slides are the smallest reusable unit, modeled on html article.
 slide.slide = element slide:slide {

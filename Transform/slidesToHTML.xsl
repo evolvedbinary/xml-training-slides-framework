@@ -128,7 +128,7 @@
     <!-- Cover slide -->
     <article class="slide" id="front_cover">
       <xsl:apply-templates select="slide:courseName, slide:audience, slide:date" mode="#current"/>
-      <p class="footnote">Slides copyright © eXpertML Ltd {year-from-date(current-date())}</p>
+      <p class="footnote" style="vertical-align: bottom; text-align: left">Slides copyright © eXpertML Ltd {year-from-date(current-date())}</p>
     </article>
     <!-- Trainer Info -->
     <xsl:apply-templates select="slide:trainerInfo" mode="#current"/>

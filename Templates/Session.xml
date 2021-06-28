@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <slide:session 
   xmlns:slide="https://schema.expertml.com/training-slides"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns="http://www.w3.org/1999/xhtml"
+  filename="${cfn}.html"
   >
-  <slide:webpage filename="${cfn}.html"/>
   
   <slide:courseIntro>
     <slide:courseName>Course Title</slide:courseName>
