@@ -47,6 +47,7 @@ slide.course.intro = element slide:courseIntro {
     slide.course.name,
     slide.course.audience?,
     slide.course.date,
+    slide.course.estimated.duration?,
     slide.trainer.info?,
     slide.set.content?,
     slide.course.overview?
@@ -62,6 +63,7 @@ slide.trainer.info = element slide:trainerInfo {
     & slide.slide*
   }
 slide.course.overview = element slide:overview {empty}
+slide.course.estimated.duration = element slide:estimated {text}
   
 ## Course settings - web page, css, logo, etc.
 slide.course.settings = element slide:settings {

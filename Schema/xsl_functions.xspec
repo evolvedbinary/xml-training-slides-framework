@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+  xmlns:slide="https://schema.expertml.com/training-slides" stylesheet="xsl_functions.xsl">
+  
+  <x:scenario label="function is-duration">
+    
+    <x:scenario label="called with valid minutes">
+      <x:call function="slide:is-duration">
+        <x:param name="duration" select="'1m'"/>
+      </x:call>
+      <x:expect label="should return true" select="true()"/>
+    </x:scenario>
+    
+    <x:scenario label="called with valid hours">
+      <x:call function="slide:is-duration">
+        <x:param name="duration" select="'1h'"/>
+      </x:call>
+      <x:expect label="should return true" select="true()"/>
+    </x:scenario>
+    
+    <x:scenario label="called with valid hours+minutes">
+      <x:call function="slide:is-duration">
+        <x:param name="duration" select="'3h 15m'"/>
+      </x:call>
+      <x:expect label="should return true" select="true()"/>
+    </x:scenario>
+    
+    <x:scenario label="called with invalid hours+minutes">
+      <x:call function="slide:is-duration">
+        <x:param name="duration" select="'15m 3h'"/>
+      </x:call>
+      <x:expect label="should return false" select="false()"/>
+    </x:scenario>
+    
+    <x:scenario label="called with rubbish">
+      <x:call function="slide:is-duration">
+        <x:param name="duration" select="'Hello'"/>
+      </x:call>
+      <x:expect label="should return false" select="false()"/>
+    </x:scenario>
+    
+  </x:scenario>
+
+  <x:scenario label="add-durations">
+    
+    <x:scenario label="with durations 1h 12m and 50m">
+      <x:call function="slide:add-durations">
+        <x:param name="duration1" select="'1h 12m'"/>
+        <x:param name="duration2" select="'50m'"/>
+      </x:call>
+      <x:expect label="should return 2h 2m" select="'2h 2m'"/>
+    </x:scenario>
+    
+    <x:scenario label="with durations 50m and 2m">
+      <x:call function="slide:add-durations">
+        <x:param name="duration1" select="'50m'"/>
+        <x:param name="duration2" select="'2m'"/>
+      </x:call>
+      <x:expect label="should return 52m" select="'52m'"/>
+    </x:scenario>
+    
+    <x:scenario label="with durations 50m and 12m">
+      <x:call function="slide:add-durations">
+        <x:param name="duration1" select="'50m'"/>
+        <x:param name="duration2" select="'12m'"/>
+      </x:call>
+      <x:expect label="should return 1h 2m" select="'1h 2m'"/>
+    </x:scenario>
+    
+  </x:scenario>
+
+  <x:scenario label="function get-minutes-from-duration">
+    
+    <x:scenario label="with duration 0m">
+      <x:call function="slide:get-minutes-from-duration">
+        <x:param name="duration" select="'0m'"/>
+      </x:call>
+      <x:expect label="should return 0" select="0"/>
+    </x:scenario>
+    
+    <x:scenario label="with duration 1h 12m">
+      <x:call function="slide:get-minutes-from-duration">
+        <x:param name="duration" select="'1h 12m'"/>
+      </x:call>
+      <x:expect label="should return 72" select="72"/>
+    </x:scenario>
+    
+    <x:scenario label="with duration 50m">
+      <x:call function="slide:get-minutes-from-duration">
+        <x:param name="duration" select="'50m'"/>
+      </x:call>
+      <x:expect label="should return 50" select="50"/>
+    </x:scenario>
+    
+    <x:scenario label="with duration 2h">
+      <x:call function="slide:get-minutes-from-duration">
+        <x:param name="duration" select="'2h'"/>
+      </x:call>
+      <x:expect label="should return 120" select="120"/>
+    </x:scenario>
+    
+  </x:scenario>
+
+  <x:scenario label="function get-duration-from-minutes">
+    
+    <x:scenario label="with 0 minutes">
+      <x:call function="slide:get-duration-from-minutes">
+        <x:param name="minutes" select="0"/>
+      </x:call>
+      <x:expect label="should return '0m'" select="'0m'"/>
+    </x:scenario>
+    
+    <x:scenario label="with 72 minutes">
+      <x:call function="slide:get-duration-from-minutes">
+        <x:param name="minutes" select="72"/>
+      </x:call>
+      <x:expect label="should return '1h 12m'" select="'1h 12m'"/>
+    </x:scenario>
+    
+    <x:scenario label="with 50 minutes">
+      <x:call function="slide:get-duration-from-minutes">
+        <x:param name="minutes" select="50"/>
+      </x:call>
+      <x:expect label="should return '50m'" select="'50m'"/>
+    </x:scenario>
+    
+    <x:scenario label="with 120 minutes">
+      <x:call function="slide:get-duration-from-minutes">
+        <x:param name="minutes" select="120"/>
+      </x:call>
+      <x:expect label="should return '2h'" select="'2h'"/>
+    </x:scenario>
+    
+  </x:scenario>
+
+</x:description>

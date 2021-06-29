@@ -1,0 +1,5 @@
+**/xspec/*_catalog.xml
+**/xspec/*-result.xml
+**/xspec/*-compiled.xsl
+**/*-result.html
+**/*-report.html
