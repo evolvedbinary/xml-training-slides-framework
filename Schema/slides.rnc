@@ -44,12 +44,12 @@ slide.session = element slide:session {
   
 ## Course Introductions
 slide.course.intro = element slide:courseIntro {
-    slide.course.name,
-    slide.course.audience?,
-    slide.course.date,
-    slide.course.estimated.duration?,
-    slide.trainer.info?,
-    slide.set.content?,
+    slide.course.name &
+    slide.course.audience? &
+    slide.course.date &
+    slide.course.estimated.duration? &
+    slide.trainer.info? &
+    slide.set.content? &
     slide.course.overview?
   }
 slide.course.name = element slide:courseName {text}
