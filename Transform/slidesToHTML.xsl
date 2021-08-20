@@ -25,13 +25,29 @@
   <xsl:param name="css-file-name" select="(/slide:course/slide:settings/slide:css/@filename, 'expertml.css')[1]"/>
 	<xsl:param name="logo" select="(/slide:course/slide:settings/slide:logo/@href, 'images/logo.png')[1]"/>
   <xsl:param name="code-line-numbers" select="false()" as="xs:boolean"/>
+  <xsl:param name="copyright" as="xs:string?" select="(/slide:course/slide:settings/slide:copyright, '© eXpertML Ltd ' || year-from-date(current-date()))[1]"/>
+  <xsl:param name="header" as="element(header)?" select="/slide:course/slide:settings/header"/>
+  <xsl:param name="footer" as="element(footer)?" select="(/slide:course/slide:settings/footer, $defaultFooter)[1]"/>  
+  
+  <xsl:variable name="defaultFooter" as="element(footer)">
+    <footer>
+      <img src="{$logo}"/>
+
+      <!-- Begin extension snippets. Add or remove as needed. -->
+
+      <!-- deck.status snippet -->
+      <p class="deck-status">
+        <span class="deck-status-current"/> / <span class="deck-status-total"/>
+      </p>
+    </footer>
+  </xsl:variable>
   
   <xsl:variable name="quot"><![CDATA["]]></xsl:variable>
   <xsl:variable name="apos"><![CDATA[']]></xsl:variable>
   
   <xsl:output method="xhtml" html-version="5" indent="true" name="html"/>
   
-  <xsl:mode name="slide:html" on-no-match="shallow-copy"/>
+  <xsl:mode name="slide:html" on-no-match="shallow-copy" on-multiple-match="use-last"/>
   <xsl:mode name="slide:flatten" on-no-match="shallow-copy" warning-on-no-match="false"/>
   <xsl:mode name="slide:title" on-no-match="shallow-skip" warning-on-no-match="false"/>
   <xsl:mode name="slide:code" on-no-match="text-only-copy" on-multiple-match="use-last" warning-on-multiple-match="false" warning-on-no-match="false"/>
@@ -105,6 +121,11 @@
   </xsl:template>
   
   <xd:doc>
+    <xd:desc>Suppress course settings</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:settings" mode="slide:html"/>
+  
+  <xd:doc>
     <xd:desc>Add topic check for slide sets</xd:desc>
   </xd:doc>
   <xsl:template match="slide:set|slide:course" mode="slide:html">
@@ -126,9 +147,11 @@
   </xd:doc>
   <xsl:template match="slide:courseIntro" mode="slide:html" expand-text="true">
     <!-- Cover slide -->
-    <article class="slide" id="front_cover">
+    <article class="slide title" id="front_cover">
       <xsl:apply-templates select="slide:courseName, slide:audience, slide:date" mode="#current"/>
-      <p class="footnote" style="vertical-align: bottom; text-align: left">Slides copyright © eXpertML Ltd {year-from-date(current-date())}</p>
+      <xsl:where-populated>
+        <p class="footnote" style="vertical-align: bottom; text-align: left">{$copyright}</p>
+      </xsl:where-populated>
     </article>
     <!-- Trainer Info -->
     <xsl:apply-templates select="slide:trainerInfo" mode="#current"/>
@@ -167,11 +190,18 @@
   </xsl:template>
   
   <xd:doc>
-    <xd:desc>Create title slides</xd:desc>
+    <xd:desc>Create h1 titles for slide titles with no subtitle</xd:desc>
   </xd:doc>
   <xsl:template match="slide:title[not(h1)]" mode="slide:html">
-    <article class="slide">
-      <h1><xsl:apply-templates mode="#current"/></h1>
+    <h1><xsl:apply-templates mode="#current"/></h1>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Create title slides</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:title" priority="2" mode="slide:html">
+    <article class="slide title">
+      <xsl:next-match/>
     </article>
   </xsl:template>
   
@@ -362,7 +392,7 @@
 					<xsl:variable name="titles" as="xs:string*">
 						<xsl:apply-templates mode="slide:title"/>
 					</xsl:variable>
-					<xsl:sequence select="($titles[1], 'eXpertML Training (c) ' || year-from-date(current-date()))[1]"/>
+					<xsl:sequence select="($titles[1], $copyright)[1]"/>
 				</title>
 
 				<link href="http://fonts.googleapis.com/css?family=Inconsolata|Open+Sans:400italic,600italic,700italic,700,400;subset=latin,latin-ext" rel="stylesheet" type="text/css"/>
@@ -386,26 +416,20 @@
 				<script src="modernizr.custom.js">&#160;</script>
 			</head>
 			<body>
+			  
+			  <!-- Start Slides -->
+			  
+			  <!-- Insert (custom) header -->
+			  <xsl:apply-templates select="$header" mode="slide:html"/>
+			  
 				<div class="deck-container">
 				  <xsl:next-match/>
 				</div>
+			  
+			  <!-- Insert (custom) footer -->
+			  <xsl:apply-templates select="$footer" mode="slide:html"/>
 
-				<footer>
-					<img src="{$logo}"/>
-
-					<!-- Begin extension snippets. Add or remove as needed. -->
-
-
-					<!-- deck.status snippet -->
-					<p class="deck-status">
-						<span class="deck-status-current"/> / <span class="deck-status-total"/>
-					</p>
-
-
-
-				</footer>
 				<!-- End slides. -->
-
 
 
 				<!-- End extension snippets. -->

@@ -69,7 +69,10 @@ slide.course.estimated.duration = element slide:estimated {text}
 slide.course.settings = element slide:settings {
 		slide.course.logo? &
 		slide.course.css? &
-		slide.course.webpage?
+		slide.course.webpage? &
+		slide.course.copyright? &
+		html5.header? &
+		html5.footer?
   }
 slide.course.logo = element slide:logo {
 		attribute href {text}
@@ -80,6 +83,7 @@ slide.course.css = element slide:css {
 slide.course.webpage = element slide:webpage {
 		attribute filename {text}
 	}
+slide.course.copyright = element slide:copyright {text}
 
 ## Slide sets are made up of metadata and slides
 slide.set = element slide:set {
