@@ -26,6 +26,7 @@
 	<xsl:param name="logo" select="(/slide:course/slide:settings/slide:logo/@href, 'images/logo.png')[1]"/>
   <xsl:param name="code-line-numbers" select="false()" as="xs:boolean"/>
   <xsl:param name="copyright" as="xs:string?" select="(/slide:course/slide:settings/slide:copyright, '© eXpertML Ltd ' || year-from-date(current-date()))[1]"/>
+  <xsl:param name="scale" as="xs:boolean" select="(/slide:course/slide:settings/slide:option[@name eq 'scale']/@boolean, true())[1]"/>
   <xsl:param name="header" as="element(header)?" select="/slide:course/slide:settings/header"/>
   <xsl:param name="footer" as="element(footer)?" select="(/slide:course/slide:settings/footer, $defaultFooter)[1]"/>  
   
@@ -256,10 +257,30 @@
   </xsl:template>
   
   <xd:doc>
+    <xd:desc>Enter horizontal mode: for content which is supposed to be viewed side-by-side, this adds a container div, and invokes horizontal mode</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:horizontal" mode="slide:html">
+    <html:div class="flex-container">
+      <xsl:apply-templates mode="slide:horizontal"/>
+    </html:div>
+  </xsl:template>
+  
+  <xd:doc>
     <xd:desc>Create main page</xd:desc>
   </xd:doc>
   <xsl:template match="/*" mode="slide:html">
     <xsl:call-template name="slide:makePage"/>
+  </xsl:template>
+  
+  <!-- horizontal mode -->
+  
+  <xd:doc>
+    <xd:desc>This mode simply adds a div around any content within a horizontal layout, allowing them to be laid out in columns</xd:desc>
+  </xd:doc>
+  <xsl:template match="*" mode="slide:horizontal">
+    <html:div class="flex-item">
+      <xsl:apply-templates select="." mode="slide:html"/>
+    </html:div>
   </xsl:template>
   
   <!-- code mode -->
@@ -459,7 +480,9 @@
 				<script src="extensions/goto/deck.goto.js"/>
 				<script src="extensions/status/deck.status.js"/>
 				<script src="extensions/navigation/deck.navigation.js"/>
-				<script src="extensions/scale/deck.scale.js"/>
+        <xsl:if test="$scale">
+          <script src="extensions/scale/deck.scale.js"/>
+        </xsl:if>
 
 				<!-- Initialize the deck. You can put this in an external file if desired. -->
 				<script>

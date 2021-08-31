@@ -71,6 +71,7 @@ slide.course.settings = element slide:settings {
 		slide.course.css? &
 		slide.course.webpage? &
 		slide.course.copyright? &
+		slide.option* &
 		html5.header? &
 		html5.footer?
   }
@@ -84,6 +85,24 @@ slide.course.webpage = element slide:webpage {
 		attribute filename {text}
 	}
 slide.course.copyright = element slide:copyright {text}
+
+## Slide options are general purpose key/value pairs
+
+slide.option = (
+  slide.option.string |
+  slide.option.boolean
+)
+
+slide.option.string = element slide:option {
+  attribute name {text},
+  text
+}
+
+slide.option.boolean = element slide:option {
+  attribute name {text},
+  attribute boolean {xsd:boolean},
+  empty
+}
 
 ## Slide sets are made up of metadata and slides
 slide.set = element slide:set {
@@ -128,16 +147,20 @@ slide.slide = element slide:slide {
 slide.slide.attlist &= html5.article.attlist & xml.id?
 slide.slide.content = html5.article.content
 
+## Horizontal sections specify content that should ideally be viewed side-by-side
+
+slide.horizontal = element slide:horizontal{
+  slide.slide.content
+}
+
+html5.grouping.class |= slide.horizontal  ## Adds slide.horizontal wherever div is allowed.
+
 ## Exercises 
 
 slide.exercise = element slide:exercise {
   slide.targetAttlist
   & slide.set.content
 }
-
-## extend block and inline level html5 models
-html5.grouping.class |= slide.code*
-html5.phrasing.model &= slide.emphChar*
 
 ## href attribute for all inclusion based elements
 slides.href = attribute href {xsd:anyURI {minLength = "1"}}
@@ -161,12 +184,13 @@ slide.emphChar.charAtts = (
   attribute char {xsd:integer},
   attribute charEnd {xsd:integer}?
 )
+html5.phrasing.model &= slide.emphChar* ## Adds emphChar to inline models
 
 ## Foreign content:
 anything = ( element * { anything } | attribute * { text } | text )*
 foreign-elements = element * - (local:* | slide:*) {anything}*
 
-## xml space can be specified on code samples (bcause it stops oxygen pretty printing them)
+## xml space can be specified on code samples (because it stops oxygen pretty printing them)
 xml.space = attribute xml:space {'default' | 'preserve'}
 
 ## code 
@@ -174,6 +198,8 @@ slide.code = (
     slide.code.general
   | slide.code.text
 )
+
+html5.grouping.class |= slide.code  ## Adds slide.code to the block html5 model
 
 slide.code.content = (slide.title?, (text|foreign-elements)*)
 slide.code.attributes = (
