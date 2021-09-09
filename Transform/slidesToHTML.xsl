@@ -278,9 +278,11 @@
     <xd:desc>This mode simply adds a div around any content within a horizontal layout, allowing them to be laid out in columns</xd:desc>
   </xd:doc>
   <xsl:template match="*" mode="slide:horizontal">
-    <html:div class="flex-item">
-      <xsl:apply-templates select="." mode="slide:html"/>
-    </html:div>
+    <xsl:where-populated>
+      <html:div class="flex-item">
+        <xsl:apply-templates select="." mode="slide:html"/>
+      </html:div>
+    </xsl:where-populated>
   </xsl:template>
   
   <!-- code mode -->
