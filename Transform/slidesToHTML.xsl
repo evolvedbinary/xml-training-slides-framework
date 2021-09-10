@@ -297,7 +297,7 @@
   <xd:doc>
     <xd:desc>Add syntax highlighting for markup languages in code</xd:desc>
   </xd:doc>
-  <xsl:template match="slide:code/@type[. = ('xml', 'xhtml', 'xslt', 'xsl')]" mode="slide:code">
+  <xsl:template match="slide:code/@type[. = ('xml', 'xhtml', 'xslt', 'xsl', 'xspec')]" mode="slide:code">
     <xsl:text>language-markup</xsl:text>
   </xsl:template>
   
