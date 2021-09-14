@@ -46,9 +46,12 @@
   <xsl:variable name="quot"><![CDATA["]]></xsl:variable>
   <xsl:variable name="apos"><![CDATA[']]></xsl:variable>
   
+  <xsl:key name="ID" match="*[@id]" use="@id"/>
+  <xsl:key name="ID" match="*[@xml:id]" use="@xml:id"/>
+  
   <xsl:output method="xhtml" html-version="5" indent="true" name="html"/>
   
-  <xsl:mode name="slide:html" on-no-match="shallow-copy" on-multiple-match="use-last"/>
+  <xsl:mode name="slide:html" on-no-match="shallow-copy" on-multiple-match="use-last" streamable="no"/>
   <xsl:mode name="slide:flatten" on-no-match="shallow-copy" warning-on-no-match="false"/>
   <xsl:mode name="slide:title" on-no-match="shallow-skip" warning-on-no-match="false"/>
   <xsl:mode name="slide:code" on-no-match="text-only-copy" on-multiple-match="use-last" warning-on-multiple-match="false" warning-on-no-match="false"/>
@@ -73,7 +76,7 @@
     <xsl:variable name="flattened">
       <xsl:apply-templates select="." mode="slide:flatten"/>
     </xsl:variable>
-    <xsl:apply-templates select="$flattened" mode="slide:html"/>
+    <xsl:apply-templates select="$flattened" mode="slide:html"/>    
   </xsl:template>
   
   <!-- Flatten Mode: produces flattened course XML; necessary for prerequisite processing -->
@@ -91,6 +94,14 @@
         <xsl:message expand-text="true">{$err:code}: {$err:description}</xsl:message>
       </xsl:catch>
     </xsl:try>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Conref is a way of replicating existing material across slides/files.</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:conref" mode="slide:flatten">
+    <xsl:variable name="top" select="(.[@href]/doc(@href), /)[1]" as="node()"/>
+    <xsl:apply-templates select="key('ID', @ref, $top)" mode="#current"/>
   </xsl:template>
   
   <!-- Title mode -->
@@ -264,7 +275,7 @@
       <xsl:apply-templates mode="slide:horizontal"/>
     </html:div>
   </xsl:template>
-  
+    
   <xd:doc>
     <xd:desc>Create main page</xd:desc>
   </xd:doc>

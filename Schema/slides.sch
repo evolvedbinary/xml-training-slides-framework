@@ -60,6 +60,10 @@
       <sch:extends rule="durationInfo"/>
     </sch:rule>
     
+    <sch:rule context="slide:conref">
+      <sch:assert test="key('ID', @ref, (.[@href]/doc(@href), /)[1])" role="error">slide:conref must refer to existing content.  Can't find <sch:value-of select="@ref"/><sch:value-of select="if (@href) then concat('in file: ', @href) else ()"/>.</sch:assert>
+    </sch:rule>
+    
     
     <!-- Abstracts -->
         

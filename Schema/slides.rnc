@@ -150,10 +150,20 @@ slide.slide.content = html5.article.content
 ## Horizontal sections specify content that should ideally be viewed side-by-side
 
 slide.horizontal = element slide:horizontal{
+  slide.targetAttlist &
   slide.slide.content
 }
 
 html5.grouping.class |= slide.horizontal  ## Adds slide.horizontal wherever div is allowed.
+
+## Conref includes/replicates an existing piece of content by id
+
+slide.conref = element slide:conref {
+  attribute ref {text},
+  slides.href?,
+  empty
+}
+html5.grouping.class |= slide.conref
 
 ## Exercises 
 
@@ -204,7 +214,8 @@ html5.grouping.class |= slide.code  ## Adds slide.code to the block html5 model
 slide.code.content = (slide.title?, (text|foreign-elements)*)
 slide.code.attributes = (
   attribute xml:space {'preserve'}?,
-  attribute class {xsd:NMTOKENS}?
+  attribute class {xsd:NMTOKENS}?,
+  slide.targetAttlist
   )
 
 slide.code.text = element slide:code {

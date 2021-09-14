@@ -7,6 +7,9 @@
   
   <xsl:param name="minsPerSlide" as="xs:integer" select="(/*/slide:settings/slide:minsPerSlide, 2)[1]"/>
   
+  <xsl:key name="ID" match="*[@id]" use="@id"/>
+  <xsl:key name="ID" match="*[@xml:id]" use="@xml:id"/>
+  
   <xsl:function name="slide:is-duration" as="xs:boolean">
     <xsl:param name="duration" as="xs:string"/>
     <xsl:sequence select="matches(normalize-space($duration), '^(\d+h( \d{1,2}m)?|\d{1,2}m)$')"/>
