@@ -37,7 +37,7 @@
       <sch:let name="claimed" value="slide:get-minutes-from-duration(.)"/>
       <sch:let name="calculated" value="slide:get-minutes-from-node(../..)"/>
       <sch:report test="$calculated gt $claimed" role="error" sqf:fix="fixEstimate">Duration is shorter than total of all slides!  Claimed duration: <sch:value-of select="$claimed"/>.  Calculated duration: <sch:value-of select="$calculated"/></sch:report>
-      <sch:report test="$calculated lt $claimed" role="info" sqf:fix="fixEstimate">Claimed duration: <sch:value-of select="$claimed"/>.  Calculated duration: <sch:value-of select="$calculated"/></sch:report>
+      <sch:report test="$calculated le $claimed" role="info" sqf:fix="fixEstimate">Claimed duration: <sch:value-of select="$claimed"/>.  Calculated duration: <sch:value-of select="$calculated"/></sch:report>
     </sch:rule>
     
     <sch:rule context="slide:set">
