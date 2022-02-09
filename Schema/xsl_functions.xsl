@@ -5,7 +5,7 @@
   exclude-result-prefixes="xs"
   version="2.0">
   
-  <xsl:param name="minsPerSlide" as="xs:integer" select="(/*/slide:settings/slide:minsPerSlide, 2)[1]"/>
+  <xsl:param name="minsPerSlide" as="xs:integer" select="(/*/slide:settings/slide:option[@name='minsPerSlide'], 2)[1]"/>
   
   <xsl:key name="ID" match="*[@id]" use="@id"/>
   <xsl:key name="ID" match="*[@xml:id]" use="@xml:id"/>
