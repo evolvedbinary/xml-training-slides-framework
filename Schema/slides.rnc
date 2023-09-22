@@ -111,7 +111,7 @@ slide.set = element slide:set {
     & slide.set.content
   }
 slide.set.content = (slide.title | slide.set | slide.slide | slide.set.ref)+
-slide.set.ref = element slide:ref {slides.href, slide.topic.duration, empty}
+slide.set.ref = element slide:ref {slides.href, slide.topic.duration?, empty}
 
 ## Slide titles are slides with no content other than a title (with optional subtitle)
 slide.title = element slide:title {
