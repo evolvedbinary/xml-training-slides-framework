@@ -100,7 +100,7 @@
     <xd:desc>Conref is a way of replicating existing material across slides/files.</xd:desc>
   </xd:doc>
   <xsl:template match="slide:conref" mode="slide:flatten">
-    <xsl:variable name="top" select="(.[@href]/doc(@href), /)[1]" as="node()"/>
+    <xsl:variable name="top" select="(.[@href]/doc(resolve-uri(@href, base-uri(.))), /)[1]" as="node()"/>
     <xsl:apply-templates select="key('ID', @ref, $top)" mode="#current"/>
   </xsl:template>
   
