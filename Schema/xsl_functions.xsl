@@ -3,7 +3,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:slide="https://schema.expertml.com/training-slides" 
   exclude-result-prefixes="xs"
-  version="2.0">
+  version="3.0">
   
   <xsl:param name="minsPerSlide" as="xs:integer" select="(/*/slide:settings/slide:option[@name='minsPerSlide'], 2)[1]"/>
   
@@ -26,9 +26,17 @@
   
   <xsl:function name="slide:get-minutes-from-duration" as="xs:integer">
     <xsl:param name="duration" as="xs:string"/>
-    <xsl:if test="not(slide:is-duration($duration))">
-      <xsl:message terminate="yes"><xsl:value-of select="$duration"/> is not a valid duration.</xsl:message>
-    </xsl:if>
+    <xsl:variable name="clean_dur">
+      <xsl:choose>
+        <xsl:when test="slide:is-duration($duration)">
+          <xsl:sequence select="$duration"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:message><xsl:value-of select="$duration"/> is not a valid duration.  Using <xsl:value-of select="$minsPerSlide"/>m</xsl:message>
+          <xsl:sequence select="$minsPerSlide||'m'"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:variable name="hours" select="xs:integer((replace($duration[matches(., 'h')], '^.*?(\d+)h.*$', '$1')[normalize-space(.) ne ''], '0')[1])" as="xs:integer"/>
     <xsl:variable name="minutes" select="xs:integer((replace($duration[matches(., 'm')], '^.*?(\d+)m.*$', '$1')[normalize-space(.) ne ''], '0')[1])" as="xs:integer"/>
     <xsl:sequence select="$minutes + ($hours * 60)"/>
@@ -43,7 +51,7 @@
   
   <xsl:function name="slide:get-duration-from-node" as="xs:string">
     <xsl:param name="node" as="node()+"/>
-    <xsl:sequence select="slide:get-minutes-from-node($node) => slide:get-duration-from-minutes()"/>
+    <xsl:sequence select="slide:get-duration-from-minutes(slide:get-minutes-from-node($node))"/>
   </xsl:function>
   
   <xsl:function name="slide:get-minutes-from-node" as="xs:integer">
@@ -51,7 +59,7 @@
     <xsl:variable name="minutes" as="xs:integer*">
       <xsl:apply-templates select="$node" mode="slide:getDurations"/>
     </xsl:variable>
-    <xsl:sequence select="sum($minutes)"/>
+    <xsl:sequence select="sum(($minutes, 0))"/>
   </xsl:function>
   
   <!-- slide:getDurations mode: retrieves durations from slides and slide sets -->
