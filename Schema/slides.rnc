@@ -110,7 +110,7 @@ slide.set = element slide:set {
     & slide.set.metadata 
     & slide.set.content
   }
-slide.set.content = (slide.title | slide.set | slide.slide | slide.set.ref)+
+slide.set.content = (slide.title | slide.set | slide.slide | slide.set.ref | slide.conref)+
 slide.set.ref = element slide:ref {slides.href, slide.topic.duration?, empty}
 
 ## Slide titles are slides with no content other than a title (with optional subtitle)
@@ -164,6 +164,8 @@ slide.conref = element slide:conref {
   empty
 }
 html5.grouping.class |= slide.conref
+html5.ol.content &= slide.conref*
+html5.ul.content &= slide.conref*
 
 ## Exercises 
 

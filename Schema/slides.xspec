@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description 
+  xmlns:x="http://www.jenitennison.com/xslt/xspec"
+  xmlns:slide="https://schema.expertml.com/training-slides"
+  schematron="slides.sch">
+  
+  
+  <x:scenario label="Given a slide:conref">
+    <x:scenario label="Where that conref is the child of a list element">
+      <x:scenario label="Where the conref does NOT point to a list item">
+        <x:context>
+          <div>
+            <p id="slides.xspec.1">Some text</p>
+            <ol>
+              <slide:conref ref="slides.xspec.1"/>
+            </ol>
+          </div>
+        </x:context>
+        <x:expect-report id="conref-in-lists"/>
+      </x:scenario>
+      <x:scenario label="Where the conref DOES point to a list item">
+        <x:context>
+          <div>
+            <li id="slides.xspec.2">Some text</li>
+            <ol>
+              <slide:conref ref="slides.xspec.2"/>
+            </ol>
+          </div>
+        </x:context>
+        <x:expect-not-report id="conref-in-lists"/>
+      </x:scenario>
+    </x:scenario>
+  </x:scenario>
+</x:description>
