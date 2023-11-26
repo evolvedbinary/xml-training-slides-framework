@@ -280,3 +280,10 @@ slide.code.general = element slide:code {
   slide.code.attributes,
   slide.code.content
 }
+
+## generated content
+slide.generate = element slide:generate {
+  attribute method {text},
+  (slide.conref | slide.set.ref | foreign-elements*)
+}
+html5.grouping.class |= slide.generate

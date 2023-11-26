@@ -7,10 +7,15 @@
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:err="http://www.w3.org/2005/xqt-errors"
   xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns:t="https://schema.expertml.com/svg/trees"
   xmlns="http://www.w3.org/1999/xhtml"
   xpath-default-namespace="http://www.w3.org/1999/xhtml"
   exclude-result-prefixes="#all"
   version="3.0">
+  
+  <xsl:import href="XMLtoTree.xsl">
+    <!-- Library for converting XMLto svg -->
+  </xsl:import>
   
   <xd:doc scope="stylesheet">
     <xd:desc>
@@ -286,6 +291,30 @@
   </xd:doc>
   <xsl:template match="/*" mode="slide:html">
     <xsl:call-template name="slide:makePage"/>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Create generated Graphics for 'box' style trees</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:generate[xs:QName(@method) eq xs:QName('t:box')]" mode="slide:html">
+    <xsl:variable name="content">
+      <xsl:document>
+        <xsl:sequence select="*"/>
+      </xsl:document>
+    </xsl:variable>
+    <xsl:apply-templates select="$content" mode="t:box"/>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Create generated Graphics for 'vertical' style trees</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:generate[xs:QName(@method) eq xs:QName('t:vertical')]" mode="slide:html">
+    <xsl:variable name="content">
+      <xsl:document>
+        <xsl:sequence select="*"/>
+      </xsl:document>
+    </xsl:variable>
+    <xsl:apply-templates select="$content" mode="t:vertical"/>
   </xsl:template>
   
   <!-- horizontal mode -->
