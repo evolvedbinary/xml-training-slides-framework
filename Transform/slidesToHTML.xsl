@@ -138,6 +138,11 @@
   <xsl:template match="slide:settings" mode="slide:html"/>
   
   <xd:doc>
+    <xd:desc>Suppress exercise resources (for now)</xd:desc>
+  </xd:doc>
+  <xsl:template match="slide:resources" mode="slide:html"/>
+  
+  <xd:doc>
     <xd:desc>Add topic check for slide sets</xd:desc>
   </xd:doc>
   <xsl:template match="slide:set|slide:course" mode="slide:html">

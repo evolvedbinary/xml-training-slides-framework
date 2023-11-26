@@ -73,7 +73,7 @@
     </xsl:on-empty>
   </xsl:template>
   
-  <xsl:template mode="slide:getDurations" as="xs:integer?" match="slide:slide">
+  <xsl:template mode="slide:getDurations" as="xs:integer?" match="slide:slide|slide:task">
     <xsl:apply-templates mode="#current" select="@duration"/>
     <xsl:on-empty>
       <!-- Use a default timing per slide -->

@@ -171,8 +171,57 @@ html5.ul.content &= slide.conref*
 
 slide.exercise = element slide:exercise {
   slide.targetAttlist
-  & slide.set.content
+  & slide.topic.prerequisites
+  & slide.topic.assumed?
+  & slide.exercise.content
 }
+
+slide.exercise.content = (
+  slide.exercise.intro?,
+  slide.exercise.task+,
+  slide.exercise.resources?,
+  slide.exercise.summary?
+)
+
+## Exercise Intro is for setting a question/exercise
+slide.exercise.intro = element slide:exercise-intro {
+      slide.targetAttlist 
+    & slide.set.metadata 
+    & slide.set.content
+}
+## Exercise summary is for showing the answers/conclusions for an exercise
+slide.exercise.summary = element slide:exercise-summary {
+      slide.targetAttlist 
+    & slide.set.metadata 
+    & slide.set.content
+}
+
+## Exercise tasks are the meat of the exercise.
+
+slide.exercise.task |= element slide:task {
+      slide.targetAttlist 
+    & slide.set.metadata 
+    & slide.set.content?
+}
+
+slide.exercise.resources = element slide:resources {
+  slide.resources.content+
+}
+
+slide.resource.attributes = (
+  attribute filename { text }?
+)
+
+slide.resources.content |= element slide:file {
+  attribute type {'xml'|'xslt'|'xspec'},
+  slide.resource.attributes,
+  slide.resources.xml.content
+}
+
+slide.resources.xml.content = (
+    slides.href
+  | foreign-elements
+)
 
 ## href attribute for all inclusion based elements
 slides.href = attribute href {xsd:anyURI {minLength = "1"}}

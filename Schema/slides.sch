@@ -3,10 +3,12 @@
   xmlns:slide="https://schema.expertml.com/training-slides" 
   xmlns:p="toReplace" queryBinding="xslt2"
   xmlns:sqf="http://www.schematron-quickfix.com/validator/process"
+  xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   >
   
   <sch:ns uri="https://schema.expertml.com/training-slides" prefix="slide"/>
+  <sch:ns uri="http://www.w3.org/1999/xhtml" prefix="html"/>
   <sch:ns uri="toReplace" prefix="p"/>
   
   <!--<sch:phase id="all">
@@ -27,7 +29,7 @@
     <sch:rule context="@duration">
       <sch:extends rule="durationFormat"/>
       <sch:let name="claimed" value="slide:get-minutes-from-duration(.)"/>
-      <sch:let name="calculated" value="slide:get-minutes-from-node((parent::slide:slide, parent::slide:ref, ..[not(self::slide:slide)]/node()))"/>      
+      <sch:let name="calculated" value="slide:get-minutes-from-node((parent::slide:task, parent::slide:slide, parent::slide:ref, ..[not(self::slide:slide)]/node()))"/>      
       <sch:report test="$calculated gt $claimed" role="error" sqf:fix="fixDuration">Duration is shorter than total of all slides!  Claimed duration: <sch:value-of select="$claimed"/>.  Calculated duration: <sch:value-of select="$calculated"/></sch:report>
       <sch:report test="$calculated lt $claimed" role="info" sqf:fix="fixDuration">Claimed duration: <sch:value-of select="$claimed"/>.  Calculated duration: <sch:value-of select="$calculated"/></sch:report>
     </sch:rule>
@@ -57,6 +59,10 @@
     </sch:rule>
     
     <sch:rule context="slide:ref">
+      <sch:extends rule="durationInfo"/>
+    </sch:rule>
+    
+    <sch:rule context="slide:task">
       <sch:extends rule="durationInfo"/>
     </sch:rule>
     

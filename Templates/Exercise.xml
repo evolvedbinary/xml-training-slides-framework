@@ -3,7 +3,17 @@
   xmlns:slide="https://schema.expertml.com/training-slides"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns="http://www.w3.org/1999/xhtml"
-  topic=""
+  prerequisites=""
   >
+  
+  <slide:exercise-intro>
+    <!-- Put introduction/instruction slides here -->
+  </slide:exercise-intro>
+  
+  <slide:task/>
+  
+  <slide:exercise-summary>
+    <!-- Put summary/model answer slides here -->
+  </slide:exercise-summary>
 
 </slide:exercise>
