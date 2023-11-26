@@ -41,8 +41,8 @@
   
   <xsl:template match="*" mode="t:vertical">
     <xsl:param name="docOrder" tunnel="yes"/>
-    <xsl:param name="vertStart" select="(2 * (index-of($docOrder, ..) +1) ) + 0.2"/>
-    <xsl:variable name="docOrderNumber" select="(index-of($docOrder, .) +1)"/>
+    <xsl:param name="vertStart" select="(2 * (t:node-index-of($docOrder, ..) +1) ) + 0.2"/>
+    <xsl:variable name="docOrderNumber" select="(t:node-index-of($docOrder, .) +1)"/>
     <xsl:variable name="baseline" select="2 * $docOrderNumber"/>
     <xsl:variable name="depth" select="count(ancestor-or-self::*)"/>
     <line class="structure" x1="{$depth}em" x2="{$depth}em" y1="{$vertStart}em" y2="{$baseline - 0.2}em"/>
@@ -56,7 +56,7 @@
   <xsl:template match="*[preceding-sibling::*]" mode="t:vertical">
     <xsl:param name="docOrder" tunnel="yes"/>
     <xsl:next-match>
-      <xsl:with-param name="vertStart" select="(2 * ((index-of($docOrder, preceding-sibling::*[1])) + 1)) - 0.2"/>
+      <xsl:with-param name="vertStart" select="(2 * ((t:node-index-of($docOrder, preceding-sibling::*[1])) + 1)) - 0.2"/>
     </xsl:next-match>
   </xsl:template>
   
@@ -76,5 +76,12 @@
       </xsl:next-match>
     </svg>
   </xsl:template>
+  
+  <xsl:function name="t:node-index-of" as="xs:integer*">
+    <xsl:param name="sequence" as="node()*"/>
+    <xsl:param name="item" as="node()?"/>
+    <xsl:variable name="boolean_sequence" select="for $s in $sequence return $s is $item" as="xs:boolean*"/>
+    <xsl:sequence select="index-of($boolean_sequence, true())"/>
+  </xsl:function>
   
 </xsl:stylesheet>

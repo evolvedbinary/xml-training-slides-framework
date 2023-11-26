@@ -79,6 +79,20 @@
         <x:expect label="...0.2em above the baseline of the text as given by docOrderNumber" test="/svg:svg/svg:text[6]/preceding-sibling::svg:line[1]/@y1/string()" select="'11.8em'"/>
       </x:scenario>
     </x:scenario>
+    <x:scenario label="given some input XML (B)">
+      <x:context>
+        <db>
+          <journals>
+            <marketing/>
+          </journals>
+          <books/>
+          <blogs/>
+        </db>
+      </x:context>
+      <x:expect label="then output some valid svg">
+        <svg:svg>...</svg:svg>
+      </x:expect>
+    </x:scenario>
   </x:scenario>
    
 </x:description>
