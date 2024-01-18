@@ -34,6 +34,7 @@
   <xsl:param name="scale" as="xs:boolean" select="(/slide:course/slide:settings/slide:option[@name eq 'scale']/@boolean, true())[1]"/>
   <xsl:param name="header" as="element(header)?" select="/slide:course/slide:settings/header"/>
   <xsl:param name="footer" as="element(footer)?" select="(/slide:course/slide:settings/footer, $defaultFooter)[1]"/>  
+  <xsl:param name="externalSVG" as="xs:boolean" select="true()" static="yes"/>
   
   <xsl:variable name="defaultFooter" as="element(footer)">
     <footer>
@@ -297,24 +298,34 @@
     <xd:desc>Create generated Graphics for 'box' style trees</xd:desc>
   </xd:doc>
   <xsl:template match="slide:generate[xs:QName(@method) eq xs:QName('t:box')]" mode="slide:html">
+    <xsl:variable name="filename" select="'images/'||generate-id(.)||'-box.svg'"/>
     <xsl:variable name="content">
       <xsl:document>
         <xsl:sequence select="*"/>
       </xsl:document>
     </xsl:variable>
-    <xsl:apply-templates select="$content" mode="t:box"/>
+    <xsl:result-document href="{$filename}" method="xml" use-when="$externalSVG">
+      <xsl:apply-templates select="$content" mode="t:box"/>
+    </xsl:result-document>
+    <html:img src="{$filename}" xsl:use-when="$externalSVG"/>
+    <xsl:apply-templates select="$content" mode="t:box" use-when="not($externalSVG)"/>
   </xsl:template>
   
   <xd:doc>
     <xd:desc>Create generated Graphics for 'vertical' style trees</xd:desc>
   </xd:doc>
   <xsl:template match="slide:generate[xs:QName(@method) eq xs:QName('t:vertical')]" mode="slide:html">
+    <xsl:variable name="filename" select="'images/'||generate-id(.)||'-vert.svg'"/>
     <xsl:variable name="content">
       <xsl:document>
         <xsl:sequence select="*"/>
       </xsl:document>
     </xsl:variable>
-    <xsl:apply-templates select="$content" mode="t:vertical"/>
+    <xsl:result-document href="{$filename}" method="xml" use-when="$externalSVG">
+      <xsl:apply-templates select="$content" mode="t:vertical"/>
+    </xsl:result-document>
+    <html:img src="{$filename}" xsl:use-when="$externalSVG"/>
+    <xsl:apply-templates select="$content" mode="t:vertical" use-when="not($externalSVG)"/>
   </xsl:template>
   
   <!-- horizontal mode -->

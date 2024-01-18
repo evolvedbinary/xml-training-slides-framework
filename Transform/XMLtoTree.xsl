@@ -31,6 +31,7 @@
   <xsl:template match="/*" mode="t:box">
     <xsl:variable name="max-width" select="max(descendant-or-self::* ! (string-length(name(.)) + 2*count(ancestor-or-self::*)))" as="xs:integer"/>
     <svg>
+      <style type="text/css">text {font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;}</style>
       <xsl:next-match>
         <xsl:with-param tunnel="yes" name="max-width" select="$max-width"/>
       </xsl:next-match>
@@ -64,6 +65,7 @@
     <xsl:variable name="docOrder" select="(./descendant-or-self::*)"/>
     <svg>
       <style type="text/css">
+        text {font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;}
         .structure {
         stroke: black;
         stroke-width: 1.25px;

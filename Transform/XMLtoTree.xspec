@@ -20,6 +20,7 @@
       </x:context>
       <x:expect label="Output the following SVG">
         <svg xmlns="http://www.w3.org/2000/svg">
+          <style type="text/css">text {font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;}</style>
           <rect x="0em" y="0em" width="14em" height="35em" fill="white" stroke="black" stroke-width="2px"/>
           <text x="1em" y="2em">subj-group</text>
           <rect x="1em" y="3em" width="12em" height="3em" fill="white" stroke="black" stroke-width="2px"/>
