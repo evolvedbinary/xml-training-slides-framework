@@ -73,6 +73,14 @@
     <xsl:accumulator-rule match="*[@assumed]" select="($value, tokenize(@assumed)) => distinct-values()"/>
   </xsl:accumulator>
   
+  <xd:doc>
+    <xd:desc>Character Count accumulator counts characters for use with the slide:emphChar element</xd:desc>
+  </xd:doc>
+  <xsl:accumulator name="CharCount" as="xs:integer" initial-value="0">
+    <xsl:accumulator-rule match="text()[ancestor::slide:emphChar]" select="$value + string-length(.)" phase="end"/>
+    <xsl:accumulator-rule match="slide:emphChar" select="0"/>
+  </xsl:accumulator>
+  
   <!-- Default Mode -->
   
   <xd:doc>
@@ -326,6 +334,35 @@
     </xsl:result-document>
     <html:img src="{$filename}" xsl:use-when="$externalSVG"/>
     <xsl:apply-templates select="$content" mode="t:vertical" use-when="not($externalSVG)"/>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Text nodes may need to insert formatting from ancestor elements</xd:desc>
+  </xd:doc>
+  <xsl:template match="text()[ancestor::slide:emphChar]" mode="slide:html">
+    <xsl:variable name="charNo" select="(ancestor::slide:emphChar/@char, 1)[1]" as="xs:integer"/>
+    <xsl:variable name="class" select="ancestor::slide:emphChar/@class" as="xs:string?"/>
+    <xsl:variable name="begin" select="accumulator-before('CharCount')"/>
+    <xsl:variable name="end" select="accumulator-after('CharCount')"/>
+    <xsl:variable name="startLoc" select="$charNo - $begin"/>
+    <xsl:variable name="char" select="substring(., $startLoc, 1)"/>
+    <xsl:if test="$charNo ge $begin and $charNo lt $end">
+      <xsl:if test="$charNo gt $begin">
+        <xsl:value-of select="substring(., 1, $startLoc - 1)"/>
+      </xsl:if>
+      <xsl:choose>
+        <xsl:when test="$class">
+          <span class="{$class}"><xsl:value-of select="$char"/></span>
+        </xsl:when>
+        <xsl:otherwise>
+          <b><xsl:value-of select="$char"/></b>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:value-of select="substring(., $startLoc + 1)"/>
+    </xsl:if>
+    <xsl:on-empty>
+      <xsl:next-match/>
+    </xsl:on-empty>
   </xsl:template>
   
   <!-- horizontal mode -->
