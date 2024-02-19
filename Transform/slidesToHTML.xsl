@@ -291,7 +291,9 @@
   </xd:doc>
   <xsl:template match="slide:horizontal" mode="slide:html">
     <html:div class="flex-container">
-      <xsl:apply-templates mode="slide:horizontal"/>
+      <xsl:apply-templates select="*" mode="slide:horizontal">
+        <xsl:with-param name="flex-grow" select="tokenize(@flex-grow)!xs:integer(.)" as="xs:integer*"/>
+      </xsl:apply-templates>
     </html:div>
   </xsl:template>
     
@@ -369,10 +371,13 @@
   
   <xd:doc>
     <xd:desc>This mode simply adds a div around any content within a horizontal layout, allowing them to be laid out in columns</xd:desc>
+    <xd:param name="flex-grow">The CSS flex-grow property, expressed as a sequence of relative weights for each column.  Default for any non-defined column is 1.</xd:param>
   </xd:doc>
   <xsl:template match="*" mode="slide:horizontal">
+    <xsl:param name="flex-grow" as="xs:integer*"/>
+    <xsl:variable name="pos" select="position()"/>
     <xsl:where-populated>
-      <html:div class="flex-item">
+      <html:div class="flex-item" style="flex-grow: {($flex-grow[$pos], 1)[1]}">
         <xsl:apply-templates select="." mode="slide:html"/>
       </html:div>
     </xsl:where-populated>

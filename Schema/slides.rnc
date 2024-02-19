@@ -151,6 +151,7 @@ slide.slide.content = html5.article.content
 
 slide.horizontal = element slide:horizontal{
   slide.targetAttlist &
+  attribute flex-grow {xsd:string {pattern = "(\d\s?)+"}}? &
   slide.slide.content
 }
 
