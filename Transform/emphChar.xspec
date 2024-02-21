@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description
+  xmlns:x="http://www.jenitennison.com/xslt/xspec"
+  xmlns:slide="https://schema.expertml.com/training-slides"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  stylesheet="slidesToHTML.xsl">
+  
+  <x:param name="css-file-name" select="('expertml.css')"/>
+  <x:param name="logo" select="('images/logo.png')"/>
+  <x:param name="copyright" select="'© eXpertML Ltd ' || year-from-date(current-date())"/>
+  <x:param name="scale" select="true()"/>
+  <x:param name="header" select="()"/>
+  <x:param name="footer" select="$defaultFooter"/>  
+  
+  <x:scenario label="WHEN applying templates in the slide:html mode">
+    <x:context mode="slide:html"/>
+    
+    <x:scenario label="GIVEN a slide:emphChar element with no other attributes">
+      <x:context>
+        <p><slide:emphChar>Markup</slide:emphChar></p>
+      </x:context>
+      <x:expect label="THEN return the text with the first character emphasised with bold formatting" test="/html:html/html:body/html:div[@class='deck-container']/*">
+        <p><b>M</b>arkup</p>
+      </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="GIVEN a slide:emphChar element specifying @char">
+      <x:context>
+        <p><slide:emphChar char="2">eXtensible</slide:emphChar></p>
+      </x:context>
+      <x:expect label="THEN return the text with the character corresponding to the number in @char emphasised (with bold formatting by default)"  test="/html:html/html:body/html:div[@class='deck-container']/*">
+        <p>e<b>X</b>tensible</p>
+      </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="GIVEN a slide:emphChar element specifying @class">
+      <x:context>
+        <p><slide:emphChar class="DropCap">Markup</slide:emphChar></p>
+      </x:context>
+      <x:expect label="THEN return the text with the first character emphasised with the given @class in a span"  test="/html:html/html:body/html:div[@class='deck-container']/*">
+        <p><span class="DropCap">M</span>arkup</p>
+      </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="GIVEN a slide:emphChar element specifying @char and @class">
+      <x:context>
+        <p><slide:emphChar char="8" class="animated">eXtensible</slide:emphChar></p>
+      </x:context>
+      <x:expect label="THEN return the text with the character corresponding to the number in @char emphasised (with bold formatting by default)"  test="/html:html/html:body/html:div[@class='deck-container']/*">
+        <p>eXtensi<span class="animated">b</span>le</p>
+      </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="GIVEN a slide:emphChar element with child elements with no other attributes">
+      <x:context>
+        <p><slide:emphChar><italic>Mark</italic>up</slide:emphChar></p>
+      </x:context>
+      <x:expect label="THEN return the text with the first character emphasised with bold formatting" test="/html:html/html:body/html:div[@class='deck-container']/*">
+        <p><italic><b>M</b>ark</italic>up</p>
+      </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="GIVEN a slide:emphChar element with child elements specifying @char">
+      <x:context>
+        <p><slide:emphChar char="2"><italic>e</italic>Xtensible</slide:emphChar></p>
+      </x:context>
+      <x:expect label="THEN return the text with the character corresponding to the number in @char emphasised (with bold formatting by default)"  test="/html:html/html:body/html:div[@class='deck-container']/*">
+        <p><italic>e</italic><b>X</b>tensible</p>
+      </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="GIVEN a slide:emphChar element with child elements specifying @class">
+      <x:context>
+        <p><slide:emphChar class="DropCap">Mar<italic>kup</italic></slide:emphChar></p>
+      </x:context>
+      <x:expect label="THEN return the text with the first character emphasised with the given @class in a span"  test="/html:html/html:body/html:div[@class='deck-container']/*">
+        <p><span class="DropCap">M</span>ar<italic>kup</italic></p>
+      </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="GIVEN a slide:emphChar element with child elements specifying @char and @class">
+      <x:context>
+        <p><slide:emphChar char="8" class="animated">eXten<italic>sible</italic></slide:emphChar></p>
+      </x:context>
+      <x:expect label="THEN return the text with the character corresponding to the number in @char emphasised (with bold formatting by default)"  test="/html:html/html:body/html:div[@class='deck-container']/*">
+        <p>eXten<italic>si<span class="animated">b</span>le</italic></p>
+      </x:expect>
+    </x:scenario>
+    
+  </x:scenario>
+  
+</x:description>
