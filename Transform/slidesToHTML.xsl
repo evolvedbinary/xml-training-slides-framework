@@ -169,6 +169,7 @@
   </xd:doc>
   <xsl:template match="slide:slide" mode="slide:html">
     <article class="slide" id="{(@xml:id, @id, generate-id())[1]}">
+      <xsl:apply-templates select="@style" mode="#current"/>
       <xsl:apply-templates mode="#current"/>
     </article>
   </xsl:template>
