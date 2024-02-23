@@ -561,20 +561,20 @@
 				<script src="core/deck.core.js"/>
 
 				<!-- Prism code highlighting -->
-				<script>
-        Prism.plugins.NormalizeWhitespace.setDefaults({
-          'remove-trailing': true,
-          'remove-indent': true,
-          'left-trim': true,
-          'right-trim': true,
-          'remove-initial-line-feed': true,
-          /*'break-lines': 80,
-          'indent': 2,
-          'tabs-to-spaces': 4,
-          'spaces-to-tabs': 4*/
-        });  
-		  </script>
 				<script src="prism.js"/>
+				<script>
+          Prism.plugins.NormalizeWhitespace.setDefaults({
+            'remove-trailing': true,
+            'remove-indent': true,
+            'left-trim': true,
+            'right-trim': true,
+            'remove-initial-line-feed': true,
+            /*'break-lines': 80,
+            'indent': 2,
+            'tabs-to-spaces': 4,
+            'spaces-to-tabs': 4*/
+          });  
+  		  </script>
 
 				<!-- Extension JS files. Add or remove as needed. -->
 				<script src="extensions/menu/deck.menu.js"/>
